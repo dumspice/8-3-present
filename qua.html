@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hộp Quà Bí Mật</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --pink: #ff4fa0;
+        --pink-dark: #d63384;
+        --pink-light: #ffd6ec;
+        --gold: #ffd700;
+        --ribbon: #fff;
+      }
+
+      body {
+        font-family: "Nunito", sans-serif;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          #fce4f3 0%,
+          #ffeef7 50%,
+          #ffe0f0 100%
+        );
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* Floating stars background */
+      .bg-stars {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .bg-star {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: var(--pink);
+        border-radius: 50%;
+        opacity: 0.15;
+        animation: twinkle var(--d, 4s) ease-in-out infinite;
+        animation-delay: var(--delay, 0s);
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.4;
+          transform: scale(1.5);
+        }
+      }
+
+      h1 {
+        font-family: "Pacifico", cursive;
+        font-size: clamp(1.8rem, 5vw, 3rem);
+        color: var(--pink-dark);
+        margin-top: 40px;
+        text-shadow: 3px 3px 0 rgba(255, 79, 160, 0.15);
+        position: relative;
+        z-index: 1;
+        animation: titleBounce 0.8s cubic-bezier(0.36, 1.56, 0.64, 1) both;
+      }
+      @keyframes titleBounce {
+        from {
+          transform: scale(0) rotate(-5deg);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+      }
+
+      p.subtitle {
+        color: #c2185b;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeUp 0.6s 0.4s ease both;
+      }
+      @keyframes fadeUp {
+        from {
+          transform: translateY(12px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* GRID */
+      .container {
+        display: grid;
+        grid-template-columns: repeat(3, 140px);
+        gap: 50px;
+        justify-content: center;
+        margin-top: 50px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ─── GIFT BOX ─── */
+      .gift-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .gift-wrap.opened {
+        cursor: default;
+      }
+
+      /* Lid */
+      .gift-lid {
+        width: 148px;
+        height: 36px;
+        background: linear-gradient(135deg, #ff6db8, #ff3d87);
+        border-radius: 10px 10px 0 0;
+        position: relative;
+        z-index: 3;
+        box-shadow: 0 4px 12px rgba(255, 61, 135, 0.4);
+        transition:
+          transform 0.6s cubic-bezier(0.36, 1.56, 0.64, 1),
+          opacity 0.4s;
+        transform-origin: top center;
+      }
+      /* Ribbon on lid */
+      .gift-lid::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 4px;
+      }
+      /* Bow */
+      .gift-bow {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 28px;
+        z-index: 4;
+        transition:
+          transform 0.6s cubic-bezier(0.36, 1.56, 0.64, 1),
+          opacity 0.4s;
+        transform-origin: bottom center;
+      }
+      .gift-bow::before,
+      .gift-bow::after {
+        content: "";
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        background: linear-gradient(135deg, #fff8, #fffd);
+        border-radius: 50% 50% 0 50%;
+        top: 0;
+      }
+      .gift-bow::before {
+        left: 2px;
+        transform: rotate(-30deg);
+      }
+      .gift-bow::after {
+        right: 2px;
+        transform: rotate(30deg) scaleX(-1);
+      }
+
+      /* Box body */
+      .gift-box {
+        width: 140px;
+        height: 130px;
+        background: linear-gradient(160deg, #ff5fa2, #ff3d87);
+        border-radius: 0 0 14px 14px;
+        position: relative;
+        z-index: 2;
+        box-shadow:
+          0 8px 24px rgba(255, 61, 135, 0.35),
+          inset 0 0 0 2px rgba(255, 255, 255, 0.15);
+        overflow: hidden;
+        transition: transform 0.3s;
+      }
+      /* Ribbon vertical */
+      .gift-box::after {
+        content: "";
+        position: absolute;
+        width: 20px;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.25);
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      /* Shine */
+      .gift-box::before {
+        content: "";
+        position: absolute;
+        width: 40px;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        left: -60px;
+        animation: shine 3s 1s ease-in-out infinite;
+      }
+      @keyframes shine {
+        0% {
+          left: -60px;
+        }
+        40%,
+        100% {
+          left: 160px;
+        }
+      }
+
+      /* Opened state */
+      .gift-wrap.opened .gift-lid {
+        transform: translateY(-60px) rotate(-30deg);
+        opacity: 0;
+      }
+      .gift-wrap.opened .gift-bow {
+        transform: translateX(-50%) translateY(-80px) rotate(-40deg);
+        opacity: 0;
+      }
+      .gift-wrap.opened .gift-box {
+        background: linear-gradient(160deg, #d4edda, #c3f7d9);
+        box-shadow: 0 0 30px rgba(80, 220, 140, 0.5);
+      }
+      .gift-wrap.opened .gift-box::after {
+        background: rgba(80, 200, 100, 0.25);
+      }
+
+      .gift-wrap:not(.opened):hover .gift-box {
+        transform: scale(1.04);
+      }
+      .gift-wrap:not(.opened):hover .gift-lid {
+        transform: translateY(-4px) rotate(-2deg);
+      }
+
+      /* ─── WISH PARTICLE ─── */
+      .wish-particle {
+        position: fixed;
+        font-size: 1.05rem;
+        font-weight: 800;
+        font-family: "Nunito", sans-serif;
+        color: white;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        padding: 8px 18px;
+        border-radius: 50px;
+        pointer-events: none;
+        z-index: 9999;
+        white-space: nowrap;
+        animation: wishFly var(--dur, 1.2s) cubic-bezier(0.22, 0.61, 0.36, 1)
+          forwards;
+        transform-origin: center;
+      }
+      @keyframes wishFly {
+        0% {
+          transform: translate(0, 0) scale(0.3) rotate(var(--rot, -5deg));
+          opacity: 1;
+        }
+        60% {
+          opacity: 1;
+          transform: translate(var(--tx, 0px), var(--ty, -80px)) scale(1.1)
+            rotate(var(--rot2, 3deg));
+        }
+        100% {
+          transform: translate(var(--tx2, 0px), var(--ty2, -160px)) scale(1)
+            rotate(0deg);
+          opacity: 0;
+        }
+      }
+
+      /* ─── MESSAGE DISPLAY ─── */
+      #message {
+        position: relative;
+        z-index: 10;
+        margin: 32px auto 0;
+        max-width: 420px;
+        min-height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .msg-bubble {
+        background: white;
+        border-radius: 20px;
+        padding: 14px 28px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #c2185b;
+        box-shadow: 0 6px 24px rgba(255, 79, 160, 0.25);
+        animation: popIn 0.5s cubic-bezier(0.36, 1.56, 0.64, 1) both;
+        border: 2px solid rgba(255, 79, 160, 0.15);
+      }
+      @keyframes popIn {
+        from {
+          transform: scale(0.5) translateY(20px);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* ─── FINAL OVERLAY ─── */
+      .final {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        background: rgba(255, 200, 230, 0.3);
+        backdrop-filter: blur(4px);
+        animation: fadeIn 0.5s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .final-card {
+        background: white;
+        padding: 50px 44px;
+        border-radius: 28px;
+        box-shadow: 0 20px 60px rgba(255, 79, 160, 0.3);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #c2185b;
+        max-width: 480px;
+        line-height: 1.5;
+        animation: cardPop 0.7s 0.2s cubic-bezier(0.36, 1.56, 0.64, 1) both;
+        border: 3px solid rgba(255, 79, 160, 0.2);
+        position: relative;
+        overflow: hidden;
+      }
+      .final-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(255, 214, 236, 0.3),
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      @keyframes cardPop {
+        from {
+          transform: scale(0.5) rotate(-5deg);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1) rotate(0);
+          opacity: 1;
+        }
+      }
+      .final-emoji {
+        font-size: 3rem;
+        display: block;
+        margin-bottom: 16px;
+        animation: bounce 1s 0.8s ease-in-out infinite alternate;
+      }
+      @keyframes bounce {
+        from {
+          transform: translateY(0);
+        }
+        to {
+          transform: translateY(-10px);
+        }
+      }
+
+      /* ─── FIREWORK PARTICLES ─── */
+      .fw-particle {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        animation: fwFly var(--dur, 1s) ease-out forwards;
+      }
+      @keyframes fwFly {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(0);
+          opacity: 0;
+        }
+      }
+      .fw-star {
+        width: 0;
+        height: 0;
+        background: transparent !important;
+        border: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fwFly var(--dur, 1s) ease-out forwards;
+      }
+
+      /* ─── COUNTER ─── */
+      #counter {
+        position: relative;
+        z-index: 1;
+        margin-top: 24px;
+        font-size: 0.95rem;
+        color: #e91e8c;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .progress-bar {
+        width: 260px;
+        height: 8px;
+        background: rgba(255, 79, 160, 0.15);
+        border-radius: 99px;
+        margin: 8px auto 0;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #ff4fa0, #ff8cc8);
+        border-radius: 99px;
+        width: 0%;
+        transition: width 0.5s cubic-bezier(0.36, 1.56, 0.64, 1);
+      }
+
+      button {
+        margin-top: 36px;
+        padding: 12px 30px;
+        border: none;
+        background: linear-gradient(135deg, #ff4fa0, #ff3d87);
+        color: white;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: "Nunito", sans-serif;
+        font-size: 1rem;
+        font-weight: 700;
+        box-shadow: 0 4px 16px rgba(255, 61, 135, 0.35);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        position: relative;
+        z-index: 1;
+      }
+      button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(255, 61, 135, 0.45);
+      }
+      button:active {
+        transform: scale(0.97);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- BG Stars -->
+    <div class="bg-stars" id="bgStars"></div>
+
+    <h1>🎁 Hộp Quà Bí Mật</h1>
+    <p class="subtitle">Mở hộp để tìm quà nhé ✨</p>
+
+    <div class="container" id="container"></div>
+
+    <div id="counter">
+      <span id="counterText">0 / 6 hộp đã mở</span>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="final" id="final">
+      <div class="final-card">
+        <span class="final-emoji">💝</span>
+        Ở đây không có đáp án đúng. Riêng cái chị này nhá, chị xứng đáng nhận
+        được tất cả những món quà tuyệt vời nhất trên thế giới này!
+      </div>
+    </div>
+
+    <button onclick="window.location.href = 'index.html'">
+      ← Quay lại menu
+    </button>
+
+    <script>
+      // Background stars
+      const bgStars = document.getElementById("bgStars");
+      for (let i = 0; i < 40; i++) {
+        const s = document.createElement("div");
+        s.className = "bg-star";
+        s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 100}%;--d:${3 + Math.random() * 4}s;--delay:${Math.random() * 4}s;width:${4 + Math.random() * 6}px;height:${4 + Math.random() * 6}px`;
+        bgStars.appendChild(s);
+      }
+
+      const wishes = [
+        "🌸 Nhiều sức khỏe!",
+        "✨ Các sếp bớt gọi đi nhậu hơn!",
+        "💖 Chồng cao 1m8, 1 nhà, 2x sự đẹp zai của kim seon ho, 3 lầu, 4 bánh!",
+        "🥰 Xinh hơn kim ji won!",
+        "😊 Nhiều tiền, tài khoản có 50 tỷ!",
+        "🌈 Công việc ổn định!",
+      ];
+
+      const COLORS = [
+        "#ff4fa0",
+        "#ff8c42",
+        "#ffd700",
+        "#4fc3f7",
+        "#ab47bc",
+        "#66bb6a",
+        "#ef5350",
+        "#26c6da",
+      ];
+      const EMOJIS = ["⭐", "💫", "✨", "🎉", "🎊", "💕", "🌸", "🍀"];
+
+      const container = document.getElementById("container");
+      const messageEl = document.getElementById("message");
+      const finalEl = document.getElementById("final");
+      const counterText = document.getElementById("counterText");
+      const progressFill = document.getElementById("progressFill");
+
+      let opened = 0;
+
+      wishes.forEach((wish, i) => {
+        const wrap = document.createElement("div");
+        wrap.className = "gift-wrap";
+
+        wrap.innerHTML = `
+          <div class="gift-bow"></div>
+          <div class="gift-lid"></div>
+          <div class="gift-box"></div>
+        `;
+
+        wrap.onclick = () => {
+          if (wrap.classList.contains("opened")) return;
+          wrap.classList.add("opened");
+
+          const rect = wrap.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + 20; // near lid
+
+          // 1. Fireworks burst from box
+          launchFireworks(cx, cy);
+
+          // 2. Wish particle flies out
+          setTimeout(() => {
+            launchWish(wish, cx, cy);
+          }, 200);
+
+          // 3. Show message bubble
+          setTimeout(() => {
+            messageEl.innerHTML = `<div class="msg-bubble">${wish}</div>`;
+          }, 900);
+
+          // 4. Counter
+          opened++;
+          counterText.textContent = `${opened} / ${wishes.length} hộp đã mở`;
+          progressFill.style.width = `${(opened / wishes.length) * 100}%`;
+
+          // 5. All opened
+          if (opened === wishes.length) {
+            setTimeout(() => {
+              finalEl.style.display = "flex";
+              for (let k = 0; k < 5; k++) {
+                setTimeout(() => bigBurst(), k * 300);
+              }
+            }, 1000);
+          }
+        };
+
+        container.appendChild(wrap);
+      });
+
+      // ── Fireworks burst ──
+      function launchFireworks(cx, cy) {
+        const count = 28;
+        for (let i = 0; i < count; i++) {
+          const angle = (i / count) * Math.PI * 2;
+          const speed = 60 + Math.random() * 100;
+          const dx = Math.cos(angle) * speed;
+          const dy = Math.sin(angle) * speed - 40;
+          const dur = 0.7 + Math.random() * 0.5;
+          const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+          // circle
+          const p = document.createElement("div");
+          p.className = "fw-particle";
+          const size = 5 + Math.random() * 7;
+          p.style.cssText = `
+            left:${cx}px; top:${cy}px;
+            width:${size}px; height:${size}px;
+            background:${color};
+            --dx:${dx}px; --dy:${dy}px; --dur:${dur}s;
+            margin-left:${-size / 2}px; margin-top:${-size / 2}px;
+            border-radius:50%;
+          `;
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), dur * 1000 + 50);
+        }
+
+        // emoji stars
+        for (let i = 0; i < 8; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 50 + Math.random() * 80;
+          const dx = Math.cos(angle) * speed;
+          const dy = Math.sin(angle) * speed - 30;
+          const dur = 0.8 + Math.random() * 0.4;
+          const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+
+          const p = document.createElement("div");
+          p.className = "fw-star";
+          p.textContent = emoji;
+          p.style.cssText = `
+            position:fixed; left:${cx}px; top:${cy}px; font-size:${14 + Math.random() * 10}px;
+            pointer-events:none; z-index:9999;
+            --dx:${dx}px; --dy:${dy}px; --dur:${dur}s;
+            animation: fwFly ${dur}s ease-out forwards;
+          `;
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), dur * 1000 + 50);
+        }
+      }
+
+      // ── Wish flies from box to center-top ──
+      function launchWish(wish, fromX, fromY) {
+        const targetX = window.innerWidth / 2;
+        const targetY = window.innerHeight * 0.28;
+
+        const el = document.createElement("div");
+        el.className = "wish-particle";
+        el.textContent = wish;
+
+        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        el.style.background = `linear-gradient(135deg, ${color}, ${COLORS[(COLORS.indexOf(color) + 2) % COLORS.length]})`;
+
+        const tx = targetX - fromX - 80;
+        const ty = -(fromY - targetY + 50);
+        const tx2 = targetX - fromX - 80;
+        const ty2 = -(fromY - targetY);
+
+        const rot = (Math.random() - 0.5) * 20;
+        const rot2 = (Math.random() - 0.5) * 8;
+
+        el.style.cssText += `
+          left:${fromX - 100}px; top:${fromY - 14}px;
+          --tx:${tx}px; --ty:${ty}px;
+          --tx2:${tx2}px; --ty2:${ty2}px;
+          --rot:${rot}deg; --rot2:${rot2}deg;
+          --dur: 1.0s;
+        `;
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1100);
+      }
+
+      // ── Big burst for final ──
+      function bigBurst() {
+        const cx = Math.random() * window.innerWidth;
+        const cy = Math.random() * window.innerHeight * 0.6 + 80;
+        const count = 40;
+        for (let i = 0; i < count; i++) {
+          const angle = (i / count) * Math.PI * 2;
+          const speed = 80 + Math.random() * 140;
+          const dx = Math.cos(angle) * speed;
+          const dy = Math.sin(angle) * speed;
+          const dur = 0.8 + Math.random() * 0.7;
+          const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+          const size = 6 + Math.random() * 10;
+
+          const p = document.createElement("div");
+          p.className = "fw-particle";
+          p.style.cssText = `
+            left:${cx}px; top:${cy}px;
+            width:${size}px; height:${size}px;
+            background:${color};
+            --dx:${dx}px; --dy:${dy}px; --dur:${dur}s;
+            margin-left:${-size / 2}px; margin-top:${-size / 2}px;
+            border-radius:${Math.random() > 0.5 ? "50%" : "2px"};
+          `;
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), dur * 1000 + 100);
+        }
+      }
+    </script>
+  </body>
+</html>
